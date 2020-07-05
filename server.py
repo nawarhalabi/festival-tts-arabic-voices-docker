@@ -4,6 +4,9 @@ import subprocess
 import time
 import random
 import Shakkala as sh
+import shakkelha
+
+shakkelha = load_model('models/shakkelha.h5')
 
 app = Flask(__name__)
 
@@ -44,7 +47,29 @@ def shakkala(text):
             
         p1 = subprocess.Popen(["python3", "/root/filter.py", "/tts/stage1_" + rand, "/tts/stage2_" + rand], stderr=open("/tts/p2err", 'w'))
         exit_codes.append(p1.wait())
-        p2 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"], stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
+        p2 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"],
+		                      stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
+        exit_codes.append(p2.wait())
+        
+        return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav')
+    except Exception as e:
+        return str(e) + str(exit_codes)
+        
+@app.route('/shakkelha/synth/<text>')
+def shakkelha(text):
+    try:
+        rand = str(random.randint(0,9999999999))
+        exit_codes = []
+        
+        final_output = shakkelha.predict(text, shakkelha)
+        
+        with open('/tts/stage1_' + rand, 'w') as f:
+            f.write(final_output)
+            
+        p1 = subprocess.Popen(["python3", "/root/filter.py", "/tts/stage1_" + rand, "/tts/stage2_" + rand], stderr=open("/tts/p2err", 'w'))
+        exit_codes.append(p1.wait())
+        p2 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"],
+		                      stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
         exit_codes.append(p2.wait())
         
         return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav')

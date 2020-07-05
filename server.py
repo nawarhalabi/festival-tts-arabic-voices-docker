@@ -7,6 +7,8 @@ import Shakkala as sh
 from keras.models import load_model
 from shakkelha.shakkelha import *
 from shakkelha.optimizer import *
+import pyarabic.number
+an = pyarabic.number.ArNumbers()
 
 shakkelha_mod = load_model('models/shakkelha.h5')
 shakkelha_mod._make_predict_function()
@@ -16,11 +18,16 @@ app = Flask(__name__)
 sh = sh.Shakkala("/root/Shakkala/", version=3)
 model, graph = sh.get_model()
 
+def num_to_word(text):
+    text = re.sub('([\\d]+)', lambda x:' ' + an.int2str(x.group(0)) + ' ', text)
+    return text
+
 @app.route('/mishkal/synth/<mode>/<text>')
 def mishkal(mode, text):
     try:
         rand = str(random.randint(0,99999))
         exit_codes = []
+        text = num_to_word(text)
         
         p1 = subprocess.Popen(["python", "/root/mishkal/bin/mishkal-console.py", text], stdout=open("/tts/stage1_" + rand, 'w'), stderr=open("/tts/p1err", 'w'))
         exit_codes.append(p1.wait())
@@ -45,6 +52,8 @@ def shakkala(mode, text):
         rand = str(random.randint(0,99999))
         exit_codes = []
         
+        text = num_to_word(text)
+
         input_int = sh.prepare_input(text)
         with graph.as_default():
           logits = model.predict(input_int)[0]
@@ -74,7 +83,7 @@ def shakkelha(mode, text):
         rand = str(random.randint(0,9999999999))
         exit_codes = []
 
-        final_output = predict(text, shakkelha_mod)
+        final_output = predict(num_to_word(text), shakkelha_mod)
 
         with open('/tts/stage1_' + rand, 'w') as f:
             f.write(final_output)

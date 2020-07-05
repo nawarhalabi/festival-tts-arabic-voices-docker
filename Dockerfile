@@ -26,6 +26,8 @@ RUN pip install -r ~/Shakkala/requirements/requirements.txt
 RUN pip3 install nltk==3.5
 RUN pip3 install tensorflow==1.14.0
 RUN pip3 install keras==2.2.0
+RUN pip3 install pyarabic
+
 RUN cp /root/Shakkala/Shakkala.py /root/Shakkala.py
 RUN cp /root/Shakkala/helper.py /root/helper.py
 RUN cp /root/Shakkala/demo.py /root/demo.py

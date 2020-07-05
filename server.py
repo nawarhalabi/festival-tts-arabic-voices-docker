@@ -1,4 +1,4 @@
-from flask import Flask, send_file, request
+from flask import Flask, send_file, request, make_response
 import codecs
 import subprocess
 import time
@@ -10,15 +10,16 @@ from shakkelha.optimizer import *
 
 shakkelha_mod = load_model('models/shakkelha.h5')
 shakkelha_mod._make_predict_function()
+
 app = Flask(__name__)
 
 sh = sh.Shakkala("/root/Shakkala/", version=3)
 model, graph = sh.get_model()
 
-@app.route('/mishkal/synth/<text>')
-def mishkal(text):
+@app.route('/mishkal/synth/<mode>/<text>')
+def mishkal(mode, text):
     try:
-        rand = str(random.randint(0,9999999999))
+        rand = str(random.randint(0,99999))
         exit_codes = []
         
         p1 = subprocess.Popen(["python", "/root/mishkal/bin/mishkal-console.py", text], stdout=open("/tts/stage1_" + rand, 'w'), stderr=open("/tts/p1err", 'w'))
@@ -27,15 +28,21 @@ def mishkal(text):
         exit_codes.append(p2.wait())
         p3 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"], stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
         exit_codes.append(p3.wait())
-        
-        return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav')
+        if mode == 'file':
+            return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav', mimetype='audio/wav')
+        if mode == 'url':
+            resp = make_response('{"url": "out_' + rand + '.wav"}', 200)
+            resp.mimetype = 'application/json'
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
+
     except Exception as e:
         return str(e) + str(exit_codes)
         
-@app.route('/shakkala/synth/<text>')
-def shakkala(text):
+@app.route('/shakkala/synth/<mode>/<text>')
+def shakkala(mode, text):
     try:
-        rand = str(random.randint(0,9999999999))
+        rand = str(random.randint(0,99999))
         exit_codes = []
         
         input_int = sh.prepare_input(text)
@@ -49,35 +56,45 @@ def shakkala(text):
             
         p1 = subprocess.Popen(["python3", "/root/filter.py", "/tts/stage1_" + rand, "/tts/stage2_" + rand], stderr=open("/tts/p2err", 'w'))
         exit_codes.append(p1.wait())
-        p2 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"],
-		                      stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
+        p2 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"], stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
         exit_codes.append(p2.wait())
-        
-        return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav')
+        if mode == 'file':
+            return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav', mimetype='audio/wav')
+        if mode == 'url':
+            resp = make_response('{"url": "out_' + rand + '.wav"}', 200)
+            resp.mimetype = 'application/json'
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
     except Exception as e:
         return str(e) + str(exit_codes)
         
-@app.route('/shakkelha/synth/<text>')
-def shakkelha(text):
+@app.route('/shakkelha/synth/<mode>/<text>')
+def shakkelha(mode, text):
     try:
         rand = str(random.randint(0,9999999999))
         exit_codes = []
-        
+
         final_output = predict(text, shakkelha_mod)
-        
+
         with open('/tts/stage1_' + rand, 'w') as f:
             f.write(final_output)
-            
+
         p1 = subprocess.Popen(["python3", "/root/filter.py", "/tts/stage1_" + rand, "/tts/stage2_" + rand], stderr=open("/tts/p2err", 'w'))
         exit_codes.append(p1.wait())
         p2 = subprocess.Popen(["text2wave", "-eval", "(voice_ara_norm_ziad_hts)",  "-o", "/tts/out_" + rand + ".wav"],
-		                      stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
+                                      stdin=open("/tts/stage2_" + rand, 'r'), stderr=open("/tts/p3err", 'w'))
         exit_codes.append(p2.wait())
-        
-        return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav')
+
+        if mode == 'file':
+            return send_file('/tts/out_' + rand + '.wav', attachment_filename='out.wav', mimetype='audio/wav')
+        if mode == 'url':
+            resp = make_response('{"url": "out_' + rand + '.wav"}', 200)
+            resp.mimetype = 'application/json'
+            resp.headers['Access-Control-Allow-Origin'] = '*'
+            return resp
+
     except Exception as e:
         return str(e) + str(exit_codes)
-        
 
         
 if __name__ == '__main__':

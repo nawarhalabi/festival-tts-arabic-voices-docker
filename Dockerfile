@@ -33,6 +33,9 @@ RUN cp -r /root/Shakkala/dictionary /root/Shakkala/model/dictionary
 
 COPY filter.py /root/filter.py
 COPY server.py /root/server.py
+COPY shakkelha /root/shakkelha
+COPY models /root/models
+COPY constants /root/constants
 
 #CMD cd /root ; gunicorn -w 10 -b 0.0.0.0:8080 server:app
 CMD cd /root ; python3 server.py

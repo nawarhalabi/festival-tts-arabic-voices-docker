@@ -10,7 +10,7 @@ with open(CONSTANTS_PATH + '/ARABIC_LETTERS_LIST.pickle', 'rb') as file:
     ARABIC_LETTERS_LIST = pkl.load(file)
 with open(CONSTANTS_PATH + '/DIACRITICS_LIST.pickle', 'rb') as file:
     DIACRITICS_LIST = pkl.load(file)
-with open(CONSTANTS_PATH + '/RNN_BIG_CHARACTERS_MAPPING.pickle', 'rb') as file:
+with open(CONSTANTS_PATH + '/RNN_SMALL_CHARACTERS_MAPPING.pickle', 'rb') as file:
     CHARACTERS_MAPPING = pkl.load(file)
 with open(CONSTANTS_PATH + '/RNN_CLASSES_MAPPING.pickle', 'rb') as file:
     CLASSES_MAPPING = pkl.load(file)

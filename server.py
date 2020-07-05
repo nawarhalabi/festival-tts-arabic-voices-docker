@@ -4,10 +4,12 @@ import subprocess
 import time
 import random
 import Shakkala as sh
-import shakkelha
+from keras.models import load_model
+from shakkelha.shakkelha import *
+from shakkelha.optimizer import *
 
-shakkelha = load_model('models/shakkelha.h5')
-
+shakkelha_mod = load_model('models/shakkelha.h5')
+shakkelha_mod._make_predict_function()
 app = Flask(__name__)
 
 sh = sh.Shakkala("/root/Shakkala/", version=3)
@@ -61,7 +63,7 @@ def shakkelha(text):
         rand = str(random.randint(0,9999999999))
         exit_codes = []
         
-        final_output = shakkelha.predict(text, shakkelha)
+        final_output = predict(text, shakkelha_mod)
         
         with open('/tts/stage1_' + rand, 'w') as f:
             f.write(final_output)

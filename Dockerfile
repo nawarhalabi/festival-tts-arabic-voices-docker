@@ -38,6 +38,7 @@ COPY server.py /root/server.py
 COPY shakkelha /root/shakkelha
 COPY models /root/models
 COPY constants /root/constants
+RUN mkdir /tts
 
 #CMD cd /root ; gunicorn -w 10 -b 0.0.0.0:8080 server:app
 CMD cd /root ; python3 server.py

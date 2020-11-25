@@ -4,6 +4,8 @@ A Docker image for a relatively light-weight full Arabic speech synthesis system
 # Running the server
 
 ```
+$ git clone https://github.com/nawarhalabi/festival-tts-arabic-voices-docker
+$ cd festival-tts-arabic-voices-docker
 $ docker kill festival
 $ docker rm festival
 $ docker build -t festival-arabic:latest .

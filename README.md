@@ -17,7 +17,7 @@ This will take about 20 mins to finish. Bare in mind the ```<wav files dir>``` w
 
 2. Configure Apache or anz webserver you are using to server the static directory ```<wav files dir>``` through ```<hostname or ip>/tts/```
 3. Use the following JS and HTML as a template for creating a web interface for using the voice:
-```
+```html
 <textarea id="input-text" dir="rtl" name="arabic-text" rows="5" placeholder="Please enter Arabic text"></textarea>
 <input id="tts-btn-mishkal" type="button" name="synthesise-mishkal" value="Synthesise (Mishkal as diacritiser)">
 <input id="tts-btn-shakkala" type="button" name="synthesise-shakkala" value="Synthesise (Shakkala as diacritiser)">

@@ -21,6 +21,10 @@ This will take about 20 mins to finish. Bare in mind the ```<wav files dir>``` w
 <textarea id="input-text" dir="rtl" name="arabic-text" rows="5" placeholder="Please enter Arabic text"></textarea>
 <input id="tts-btn-mishkal" type="button" name="synthesise-mishkal" value="Synthesise (Mishkal as diacritiser)">
 <input id="tts-btn-shakkala" type="button" name="synthesise-shakkala" value="Synthesise (Shakkala as diacritiser)">
+<audio controls="">
+       <source id="source" src="" type="audio/wav">
+       Browser does not support this
+</audio>
 <script>
 tts_server = 'http://<hostname or ip>/tts/';
 
@@ -29,7 +33,6 @@ $('#tts-btn-mishkal').on('click', function(e) {
                 url: 'http://<hostname or ip>:8080/mishkal/synth/url/' + $('#input-text').val(),
                 data: '',
                 success: function( data ) {
-                        $('#waiting-gif').html('');
                         $('audio #source').attr('src', tts_server + data['url']);
                         $('audio').get(0).load();
                         $('audio').get(0).play();
@@ -39,10 +42,9 @@ $('#tts-btn-mishkal').on('click', function(e) {
 
 $('#tts-btn-shakkala').on('click', function(e) {
         $.getJSON({
-                url: 'http://ar.arabicspeechcorpus.com:8080/shakkala/synth/url/' + $('#input-text').val(),
+                url: 'http://<hostname or ip>:8080/shakkala/synth/url/' + $('#input-text').val(),
                 data: '',
                 success: function( data ) {
-                        $('#waiting-gif').html('');
                         $('audio #source').attr('src', tts_server + data['url']);
                         $('audio').get(0).load();
                         $('audio').get(0).play();

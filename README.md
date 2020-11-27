@@ -15,7 +15,7 @@ $ docker run -p 8080:8080 -v <wav files dir>:/ttd --name festival festival-arabi
 
 This will take about 20 mins to finish. Bare in mind the ```<wav files dir>``` will contain the generated the wav files after sending the http request based on certain config below
 
-2. Configure Apache or anz webserver you are using to server the static directory ```<wav files dir>``` through ```<hostname or ip>/tts/```
+2. Configure Apache or any webserver to serve the static file directory ```<wav files dir>``` through ```http://<hostname or ip>/tts/```
 3. Use the following JS and HTML as a template for creating a web interface for using the voice:
 ```html
 <textarea id="input-text" dir="rtl" name="arabic-text" rows="5" placeholder="Please enter Arabic text"></textarea>

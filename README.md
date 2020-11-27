@@ -15,10 +15,41 @@ $ docker run -p 8080:8080 -v <wav files dir>:/ttd --name festival festival-arabi
 
 This will take about 20 mins to finish. Bare in mind the ```<wav files dir>``` will contain the generated the wav files after sending the http request based on certain config below
 
-2. Configure Apache or anz webserver you are using to server the static directory ```<wav files dir>```
+2. Configure Apache or anz webserver you are using to server the static directory ```<wav files dir>``` through ```<hostname or ip>/tts/```
 3. Use the following JS and HTML as a template for creating a web interface for using the voice:
 ```
-<textarea id="input-text" dir="rtl" class="col-xs-12" name="arabic-text" rows="5" placeholder="Please enter text"></textarea>
+<textarea id="input-text" dir="rtl" name="arabic-text" rows="5" placeholder="Please enter Arabic text"></textarea>
+<input id="tts-btn-mishkal" type="button" name="synthesise-mishkal" value="Synthesise (Mishkal as diacritiser)">
+<input id="tts-btn-shakkala" type="button" name="synthesise-shakkala" value="Synthesise (Shakkala as diacritiser)">
+<script>
+tts_server = 'http://<hostname or ip>/tts/';
+
+$('#tts-btn-mishkal').on('click', function(e) {
+        $.getJSON({
+                url: 'http://<hostname or ip>:8080/mishkal/synth/url/' + $('#input-text').val(),
+                data: '',
+                success: function( data ) {
+                        $('#waiting-gif').html('');
+                        $('audio #source').attr('src', tts_server + data['url']);
+                        $('audio').get(0).load();
+                        $('audio').get(0).play();
+                }
+        });
+});
+
+$('#tts-btn-shakkala').on('click', function(e) {
+        $.getJSON({
+                url: 'http://ar.arabicspeechcorpus.com:8080/shakkala/synth/url/' + $('#input-text').val(),
+                data: '',
+                success: function( data ) {
+                        $('#waiting-gif').html('');
+                        $('audio #source').attr('src', tts_server + data['url']);
+                        $('audio').get(0).load();
+                        $('audio').get(0).play();
+                }
+        });
+});
+</script>
 ```
 
 # Accessing the server
